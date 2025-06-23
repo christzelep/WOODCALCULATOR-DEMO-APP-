@@ -65,69 +65,7 @@
         </div>
     </footer>
 
-    <script>
-        // Basic Calculator Functionality
-        document.getElementById('calculateBtn').addEventListener('click', function() {
-            const length = parseFloat(document.getElementById('length').value);
-            const width = parseFloat(document.getElementById('width').value);
-            const thickness = parseFloat(document.getElementById('thickness').value);
-            
-            if (length && width && thickness) {
-                const boardFeet = (length * width * thickness) / 144;
-                document.getElementById('result').innerHTML = `
-                    <strong>Result:</strong> ${boardFeet.toFixed(2)} board feet
-                `;
-            } else {
-                document.getElementById('result').innerHTML = `
-                    <strong>Error:</strong> Please enter all values
-                `;
-            }
-        });
-
-        // PWA Installation Logic
-        let deferredPrompt;
-        const installBtn = document.getElementById('installBtn');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'block';
-            
-            installBtn.addEventListener('click', () => {
-                installBtn.textContent = 'Installing...';
-                deferredPrompt.prompt();
-                
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        installBtn.textContent = '✅ Installed!';
-                    } else {
-                        installBtn.textContent = '📲 Install App';
-                    }
-                    setTimeout(() => {
-                        installBtn.style.display = 'none';
-                    }, 3000);
-                });
-            });
-        });
-
-        // Register Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(reg => console.log('Service Worker registered'))
-                    .catch(err => console.error('Service Worker error:', err));
-            });
-        }
-
-        // Track opens for upgrade prompt
-        let openCount = localStorage.getItem('openCount') || 0;
-        localStorage.setItem('openCount', ++openCount);
-        
-        if (openCount > 3) {
-            setTimeout(() => {
-                alert("Unlock PRO features: Advanced calculators, cut lists, and material estimators!");
-            }, 10000);
-        }
-    </script>
+    <!-- Load app.js at the end -->
+    <script src="app.js"></script>
 </body>
 </html>
