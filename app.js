@@ -21,42 +21,50 @@ function setupPWAInstallation() {
     let deferredPrompt;
     const installBtn = document.getElementById('installBtn');
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        installBtn.style.display = 'block';
-        
-        installBtn.addEventListener('click', () => {
-            installBtn.textContent = 'Installing...';
-            deferredPrompt.prompt();
+    // Initially hide the install button
+    if (installBtn) {
+        installBtn.style.display = 'none';
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block';
             
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    installBtn.textContent = '✅ Installed!';
-                } else {
-                    installBtn.textContent = '📲 Install App';
-                }
-                setTimeout(() => {
-                    installBtn.style.display = 'none';
-                }, 3000);
+            installBtn.addEventListener('click', () => {
+                installBtn.textContent = 'Installing...';
+                deferredPrompt.prompt();
+                
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        installBtn.textContent = '✅ Installed!';
+                        console.log('User accepted the install prompt');
+                    } else {
+                        installBtn.textContent = '📲 Install App';
+                        console.log('User dismissed the install prompt');
+                    }
+                    setTimeout(() => {
+                        installBtn.style.display = 'none';
+                    }, 3000);
+                });
             });
         });
-    });
+    }
 
     // Register Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/service-worker.js')
-                .then(reg => console.log('Service Worker registered'))
-                .catch(err => console.error('Service Worker error:', err));
+                .then(reg => console.log('[Service Worker] Registered:', reg))
+                .catch(err => console.error('[Service Worker] Registration failed:', err));
         });
     }
 }
 
 // Usage Tracking for Upgrade Prompts
 function trackUsageForUpgrade() {
-    let openCount = localStorage.getItem('openCount') || 0;
-    localStorage.setItem('openCount', ++openCount);
+    let openCount = parseInt(localStorage.getItem('openCount') || 0;
+    openCount++;
+    localStorage.setItem('openCount', openCount);
     
     if (openCount > 3) {
         setTimeout(() => {
@@ -68,17 +76,19 @@ function trackUsageForUpgrade() {
     }
 }
 
-// Initialize Calculator
+// Initialize App
 document.addEventListener('DOMContentLoaded', () => {
-    // Setup event listeners
-    document.getElementById('calculateBtn').addEventListener('click', calculateBoardFeet);
+    // Setup calculator functionality
+    const calculateBtn = document.getElementById('calculateBtn');
+    if (calculateBtn) {
+        calculateBtn.addEventListener('click', calculateBoardFeet);
+    }
     
-    // Setup PWA functionality
+    // Setup PWA installation
     setupPWAInstallation();
     
     // Track usage for upgrade prompts
     trackUsageForUpgrade();
     
-    // Additional initialization code can go here
     console.log("Woodworking Calculator Demo initialized!");
 });
