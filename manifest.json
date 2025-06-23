@@ -1,24 +1,22 @@
+// manifest.json
 {
-  "name": "Woodworking Calculator",
-  "short_name": "WoodCalc",
-  "start_url": "/index.html",
+  "name": "WoodWizard Pro",
+  "short_name": "WoodWizard",
+  "description": "Professional woodworking tool with cut optimization and joinery calculator",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5f5f5",
-  "theme_color": "#d2691e",
-  "description": "Professional woodworking calculator - Demo",
+  "background_color": "#2c786c",
+  "theme_color": "#2c786c",
   "icons": [
     {
-      "src": "icons/icon-192x192.png",
+      "src": "icon-192x192.png.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
-      "src": "icons/icon-512x512.png",
+      "src": "icon-512x512.png.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
-  ],
-  "splash_pages": null
+  ]
 }
