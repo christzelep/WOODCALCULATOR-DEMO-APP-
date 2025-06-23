@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Woodworking Calculator - Demo</title>
+    
+    <!-- PWA Essentials -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#d2691e">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Woodworking Calculator</h1>
+        <p>Professional Tools for Woodworkers</p>
+    </header>
+
+    <main>
+        <section class="calculator">
+            <h2>Board Foot Calculator</h2>
+            <div class="input-group">
+                <label for="length">Length (ft):</label>
+                <input type="number" id="length" placeholder="Enter length">
+            </div>
+            <div class="input-group">
+                <label for="width">Width (in):</label>
+                <input type="number" id="width" placeholder="Enter width">
+            </div>
+            <div class="input-group">
+                <label for="thickness">Thickness (in):</label>
+                <input type="number" id="thickness" placeholder="Enter thickness">
+            </div>
+            <button id="calculateBtn">Calculate</button>
+            <div id="result" class="result-box"></div>
+        </section>
+
+        <section class="features">
+            <h2>Demo Features</h2>
+            <ul>
+                <li>✔️ Board foot calculation</li>
+                <li>✔️ Measurement conversion</li>
+                <li>❌ Cut list optimizer (PRO)</li>
+                <li>❌ Material cost estimator (PRO)</li>
+            </ul>
+        </section>
+    </main>
+
+    <!-- Install Button -->
+    <button id="installBtn" class="pwa-install-btn">
+        📲 Install App
+    </button>
+
+    <!-- Upgrade CTA -->
+    <footer>
+        <div class="upgrade-cta">
+            <h3>Unlock Full Power!</h3>
+            <p>Get 15+ professional tools for your woodworking projects</p>
+            <a href="https://your-main-product.com/upgrade" class="cta-button">
+                UPGRADE TO PRO VERSION
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        // Basic Calculator Functionality
+        document.getElementById('calculateBtn').addEventListener('click', function() {
+            const length = parseFloat(document.getElementById('length').value);
+            const width = parseFloat(document.getElementById('width').value);
+            const thickness = parseFloat(document.getElementById('thickness').value);
+            
+            if (length && width && thickness) {
+                const boardFeet = (length * width * thickness) / 144;
+                document.getElementById('result').innerHTML = `
+                    <strong>Result:</strong> ${boardFeet.toFixed(2)} board feet
+                `;
+            } else {
+                document.getElementById('result').innerHTML = `
+                    <strong>Error:</strong> Please enter all values
+                `;
+            }
+        });
+
+        // PWA Installation Logic
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block';
+            
+            installBtn.addEventListener('click', () => {
+                installBtn.textContent = 'Installing...';
+                deferredPrompt.prompt();
+                
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        installBtn.textContent = '✅ Installed!';
+                    } else {
+                        installBtn.textContent = '📲 Install App';
+                    }
+                    setTimeout(() => {
+                        installBtn.style.display = 'none';
+                    }, 3000);
+                });
+            });
+        });
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('Service Worker registered'))
+                    .catch(err => console.error('Service Worker error:', err));
+            });
+        }
+
+        // Track opens for upgrade prompt
+        let openCount = localStorage.getItem('openCount') || 0;
+        localStorage.setItem('openCount', ++openCount);
+        
+        if (openCount > 3) {
+            setTimeout(() => {
+                alert("Unlock PRO features: Advanced calculators, cut lists, and material estimators!");
+            }, 10000);
+        }
+    </script>
+</body>
+</html>
