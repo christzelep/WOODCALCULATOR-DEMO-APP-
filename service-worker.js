@@ -1,71 +1,42 @@
-// Config
-const CACHE_NAME = 'wood-calc-demo-v4';
-const OFFLINE_URL = '/offline.html';
-const PRECACHE_URLS = [
+// sw.js - Service Worker File
+
+const CACHE_NAME = 'woodwizard-pro-v1';
+const urlsToCache = [
   '/',
-  '/index.html',
-  '/styles.css',
-  '/app.js',
-  '/offline.html',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
-  '/splash.html'
+  'index.html',
+  'icon-192x192.png.png',
+  'icon-512x512.png.png'
 ];
 
-// Install Event
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('[Service Worker] Caching all: app shell and content');
-        return cache.addAll(PRECACHE_URLS);
+        return cache.addAll(urlsToCache);
       })
-      .then(() => self.skipWaiting())
   );
 });
 
-// Fetch Event
 self.addEventListener('fetch', event => {
-  // Skip non-GET requests
-  if (event.request.method !== 'GET') return;
-
-  // Network-first strategy
   event.respondWith(
-    fetch(event.request)
+    caches.match(event.request)
       .then(response => {
-        // If response is good, cache it
-        const responseToCache = response.clone();
-        caches.open(CACHE_NAME)
-          .then(cache => cache.put(event.request, responseToCache));
-        return response;
-      })
-      .catch(() => {
-        // If network fails, try cache
-        return caches.match(event.request)
-          .then(response => {
-            // If not found in cache, show offline page
-            return response || caches.match(OFFLINE_URL);
-          });
+        return response || fetch(event.request);
       })
   );
 });
 
-// Activate Event
 self.addEventListener('activate', event => {
+  const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
-        cacheNames.map(cache => {
-          if (cache !== CACHE_NAME) {
-            console.log('[Service Worker] Deleting old cache:', cache);
-            return caches.delete(cache);
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName);
           }
         })
       );
-    })
-    .then(() => {
-      console.log('[Service Worker] Claiming clients');
-      return self.clients.claim();
     })
   );
 });
